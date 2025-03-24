@@ -4,12 +4,12 @@ ThisBuild / organization := "sk.softwave"
 ThisBuild / name := "payBySquare4s"
 ThisBuild / version := "1.0.3"
 
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.15"
 
-val buildScalaVersion = "2.13.3"
+val buildScalaVersion = "2.13.15"
 val scala212 = "2.12.10"
 
-scalafmtOnCompile in ThisBuild := true
+// scalafmtOnCompile in ThisBuild := true
 
 val dependencies = Seq(
   "org.tukaani" % "xz" % "1.8",
@@ -25,6 +25,10 @@ lazy val core = Project(id="payBySquare4s", base=file("."))
   )
 
 lazy val app = Project(id="app", base=file("app"))
-  .settings(Defaults.coreDefaultSettings)
+  .settings(Defaults.coreDefaultSettings,
+    Compile / mainClass := Some("sk.softwave.paybysquare.Main"),
+    assembly / mainClass := Some("sk.softwave.paybysquare.Main"),
+    assembly / assemblyJarName := "payBySquareApp.jar"
+  )
   .dependsOn(core)
   .aggregate(core)

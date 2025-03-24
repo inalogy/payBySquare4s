@@ -2,12 +2,17 @@
 /project/target
 .classpath
 .cache
+.metals
 /target
 /.settings
+.bloop
+/.bloop
 /.target
 /.project
 .scala_dependencies
 .DS_Store
+.bsp
+
 /.idea
 /.idea_modules
 .sbtopts

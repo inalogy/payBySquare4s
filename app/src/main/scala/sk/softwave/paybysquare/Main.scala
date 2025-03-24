@@ -1,31 +1,27 @@
 package sk.softwave.paybysquare
 
-import java.io.FileNotFoundException
-
 import scala.util.{ Failure, Success, Try }
 
 object Main extends App {
   val toEncode = if (args.length > 0) args(0) else ""
-  val fileName = if (args.length > 1) args(1) else ""
 
-  val usageStr = "Usage: paybysquare <payload> <output-file>"
+  val usageStr = "Usage: paybysquare <payload>"
   val payloadUsageStr = "payload - <amount>;<currency>;<vs>;<ss>;<ks>;<reference>;<paymentNote>;<iban>;<bic>"
-  val outputUsageStr = "output-file - path where output PNG should be saved"
 
   private def strToOpt(str: String): Option[String] = if (str.isEmpty) None else Some(str)
 
   if (args.length == 1 && args(0) == "--help") {
-    println(usageStr)
-    println(payloadUsageStr)
-    println(outputUsageStr)
-  } else if (toEncode.isEmpty || fileName.isEmpty) {
-    println(usageStr)
+    System.err.println(usageStr)
+    System.err.println(payloadUsageStr)
+    System.err.println("The Base64 encoded PNG image will be written to stdout")
+  } else if (toEncode.isEmpty) {
+    System.err.println(usageStr)
     sys.exit(1)
   } else {
     val data = toEncode.replace("\\;", 0.toChar.toString).split(";", -1).map(_.replace(0.toChar, ';'))
     if (data.size != 9) {
-      println(payloadUsageStr)
-      println(data.size)
+      System.err.println(payloadUsageStr)
+      System.err.println(s"Expected 9 parameters, got ${data.size}")
       sys.exit(2)
     } else {
       Try {
@@ -40,16 +36,17 @@ object Main extends App {
           iban = data(7),
           bic = strToOpt(data(8))
         )
-        PayBySquare.encodeFrameQR(pay, fileName)
+        
+        // Generate QR code and encode it to Base64
+        val base64Image = PayBySquare.encodeFrameQRToBase64(pay)
+        
+        // Output Base64 string to stdout
+        print(base64Image)
       } match {
         case Success(_) =>
-        case Failure(_: FileNotFoundException) =>
-          println(s"'$fileName' is an invalid path for <output-file>")
-          println(payloadUsageStr)
-          sys.exit(3)
         case Failure(e) =>
-          println(e)
-          println(payloadUsageStr)
+          System.err.println(e.getMessage)
+          System.err.println(payloadUsageStr)
           sys.exit(3)
       }
     }

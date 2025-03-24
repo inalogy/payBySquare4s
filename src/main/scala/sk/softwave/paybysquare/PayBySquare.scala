@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage
 import java.io.{ ByteArrayOutputStream, File, InputStream }
 import java.nio.{ ByteBuffer, ByteOrder }
 import java.util.zip.CRC32
+import java.util.Base64
 import com.google.zxing.{ BarcodeFormat, EncodeHintType }
 import com.google.zxing.client.j2se.MatrixToImageWriter
 import com.google.zxing.qrcode.QRCodeWriter
@@ -97,6 +98,36 @@ trait PayBySquare {
       s"$homeDir/${path.substring(2)}"
     else
       path
+  }
+  
+  /**
+   * Encodes a BufferedImage to a Base64 string
+   */
+  private def imageToBase64(image: BufferedImage): String = {
+    val outputStream = new ByteArrayOutputStream()
+    try {
+      ImageIO.write(image, "png", outputStream)
+      Base64.getEncoder.encodeToString(outputStream.toByteArray)
+    } finally {
+      outputStream.close()
+    }
+  }
+  
+  /**
+   * Generates a QR code with frame and returns it as a Base64 encoded string
+   */
+  def encodeFrameQRToBase64(pay: Pay): String = {
+    val qrImg = generateQR(encode(pay), 240, 0)
+    
+    val frameIs = getResourceAsStream("payBySquareFrame-grey.png")
+    val frame = ImageIO.read(frameIs)
+    val combined = new BufferedImage(288, 336, BufferedImage.TYPE_INT_ARGB)
+    val g = combined.getGraphics().asInstanceOf[Graphics2D]
+    g.drawImage(frame, 0, 0, null)
+    g.drawImage(qrImg, 24, 24, null)
+    g.dispose()
+    
+    imageToBase64(combined)
   }
 
 }
