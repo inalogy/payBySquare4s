@@ -2,6 +2,7 @@
 /project/target
 .classpath
 .cache
+.vscode
 .metals
 /target
 /.settings
