@@ -11,7 +11,8 @@ trait PayModelFixtures {
     None,
     Some("esluzby orsr - 377489/2020"),
     "SK7281800000007000145308",
-    Some("SPSRSKBAXXX")
+    Some("SPSRSKBAXXX"),
+    None
   )
 
   val complexPay1: Pay = new Pay {
@@ -28,8 +29,8 @@ trait PayModelFixtures {
         reference = None,
         paymentNote = Some("QR platba Orange"),
         bankAccounts = Seq(
-          BankAccount("SK2911000000002628005850", Some("TATRSKBX")),
-          BankAccount("SK0209000000000176084455", Some("GIBASKBX"))
+          BankAccount("SK2911000000002628005850", Some("TATRSKBX"), None),
+          BankAccount("SK0209000000000176084455", Some("GIBASKBX"), None)
         )
       )
     )
@@ -49,11 +50,11 @@ trait PayModelFixtures {
         reference = None,
         paymentNote = Some("poistne za obdobie 01.06.2020 - 01.06.2021"),
         bankAccounts = Seq(
-          BankAccount("SK2509000000000175126457", Some("GIBASKBX")),
-          BankAccount("SK2911110000001029706001", Some("UNCRSKBX")),
-          BankAccount("SK1102000000000090004012", Some("SUBASKBX")),
-          BankAccount("SK3465000000000202120000", Some("POBNSKBA")),
-          BankAccount("SK2056000000004804915001", Some("KOMASK2X"))
+          BankAccount("SK2509000000000175126457", Some("GIBASKBX"), None),
+          BankAccount("SK2911110000001029706001", Some("UNCRSKBX"), None),
+          BankAccount("SK1102000000000090004012", Some("SUBASKBX"), None),
+          BankAccount("SK3465000000000202120000", Some("POBNSKBA"), None),
+          BankAccount("SK2056000000004804915001", Some("KOMASK2X"), None)
         )
       )
     )

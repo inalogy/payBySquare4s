@@ -130,6 +130,14 @@ trait PayBySquare {
     imageToBase64(combined)
   }
 
+  /**
+   * Generates a plain QR code (without frame) and returns it as a Base64 encoded string
+   */
+  def encodeQRBase64(pay: Pay, size: Int = 300, margin: Int = 4): String = {
+    val qrImg = generateQR(encode(pay), size, margin)
+    imageToBase64(qrImg)
+  }
+
 }
 
 object PayBySquare extends PayBySquare

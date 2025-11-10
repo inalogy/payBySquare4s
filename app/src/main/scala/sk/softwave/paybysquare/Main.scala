@@ -6,7 +6,7 @@ object Main extends App {
   val toEncode = if (args.length > 0) args(0) else ""
 
   val usageStr = "Usage: paybysquare <payload>"
-  val payloadUsageStr = "payload - <amount>;<currency>;<vs>;<ss>;<ks>;<reference>;<paymentNote>;<iban>;<bic>"
+  val payloadUsageStr = "payload - <amount>;<currency>;<vs>;<ss>;<ks>;<reference>;<paymentNote>;<iban>;<bic>;<beneficiaryName>"
 
   private def strToOpt(str: String): Option[String] = if (str.isEmpty) None else Some(str)
 
@@ -19,9 +19,9 @@ object Main extends App {
     sys.exit(1)
   } else {
     val data = toEncode.replace("\\;", 0.toChar.toString).split(";", -1).map(_.replace(0.toChar, ';'))
-    if (data.size != 9) {
+    if (data.size != 10) {
       System.err.println(payloadUsageStr)
-      System.err.println(s"Expected 9 parameters, got ${data.size}")
+      System.err.println(s"Expected 10 parameters, got ${data.size}")
       sys.exit(2)
     } else {
       Try {
@@ -34,7 +34,8 @@ object Main extends App {
           reference = strToOpt(data(5)),
           paymentNote = strToOpt(data(6)),
           iban = data(7),
-          bic = strToOpt(data(8))
+          bic = strToOpt(data(8)),
+          beneficiaryName = strToOpt(data(9))
         )
         
         // Generate QR code and encode it to Base64

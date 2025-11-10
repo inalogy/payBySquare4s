@@ -40,8 +40,8 @@ case class Payment(
     ).mkString("\t")
 }
 
-case class BankAccount(iban: String, bic: Option[String]) extends BySquareType {
-  override def serialize: String = Seq(iban, bic.getOrElse("")).mkString("\t")
+case class BankAccount(iban: String, bic: Option[String], beneficiaryName: Option[String]) extends BySquareType {
+  override def serialize: String = Seq(iban, bic.getOrElse(""), beneficiaryName.getOrElse("")).mkString("\t")
 }
 
 trait Pay extends BySquareType {
@@ -68,7 +68,8 @@ case class SimplePay(
   reference: Option[String],
   paymentNote: Option[String],
   iban: String,
-  bic: Option[String]
+  bic: Option[String],
+  beneficiaryName: Option[String]
 ) extends Pay {
 
   override val invoiceId = None
@@ -84,7 +85,7 @@ case class SimplePay(
       ks = ks,
       reference = reference,
       paymentNote = paymentNote,
-      bankAccounts = Seq(BankAccount(iban, bic))
+      bankAccounts = Seq(BankAccount(iban, bic, beneficiaryName))
     )
   )
 }
