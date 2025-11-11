@@ -17,7 +17,10 @@ case class Payment(
   ks: Option[String],
   reference: Option[String],
   paymentNote: Option[String],
-  bankAccounts: Seq[BankAccount]
+  bankAccounts: Seq[BankAccount],
+  beneficiaryName: Option[String] = None,
+  beneficiaryStreet: Option[String] = None,
+  beneficiaryCity: Option[String] = None
 ) extends BySquareType {
 
   require(payType == 1, "StandingOrder and DirectDebit unsupported for now")
@@ -40,8 +43,8 @@ case class Payment(
     ).mkString("\t")
 }
 
-case class BankAccount(iban: String, bic: Option[String], beneficiaryName: Option[String]) extends BySquareType {
-  override def serialize: String = Seq(iban, bic.getOrElse(""), beneficiaryName.getOrElse("")).mkString("\t")
+case class BankAccount(iban: String, bic: Option[String]) extends BySquareType {
+  override def serialize: String = Seq(iban, bic.getOrElse("")).mkString("\t")
 }
 
 trait Pay extends BySquareType {
@@ -51,12 +54,25 @@ trait Pay extends BySquareType {
   //TODO remove
   def serializeTest: String = serialize.replace("\t", "|")
 
-  override def serialize: String =
-    Seq(
+  override def serialize: String = {
+    val paymentsData = Seq(
       invoiceId.getOrElse(""),
       payments.size,
       payments.map(_.serialize).mkString("\t")
     ).mkString("\t")
+
+    // Append beneficiary info for each payment (PayBySquare 1.1.0+)
+    // Always append 3 fields per payment: name, street, city
+    val beneficiaryData = payments.map { p =>
+      Seq(
+        p.beneficiaryName.getOrElse(""),
+        p.beneficiaryStreet.getOrElse(""),
+        p.beneficiaryCity.getOrElse("")
+      ).mkString("\t")
+    }.mkString("\t")
+
+    paymentsData + "\t" + beneficiaryData
+  }
 }
 
 case class SimplePay(
@@ -69,7 +85,9 @@ case class SimplePay(
   paymentNote: Option[String],
   iban: String,
   bic: Option[String],
-  beneficiaryName: Option[String]
+  beneficiaryName: Option[String] = None,
+  beneficiaryStreet: Option[String] = None,
+  beneficiaryCity: Option[String] = None
 ) extends Pay {
 
   override val invoiceId = None
@@ -85,7 +103,10 @@ case class SimplePay(
       ks = ks,
       reference = reference,
       paymentNote = paymentNote,
-      bankAccounts = Seq(BankAccount(iban, bic, beneficiaryName))
+      bankAccounts = Seq(BankAccount(iban, bic)),
+      beneficiaryName = beneficiaryName,
+      beneficiaryStreet = beneficiaryStreet,
+      beneficiaryCity = beneficiaryCity
     )
   )
 }
