@@ -37,12 +37,9 @@ object Main extends App {
           bic = strToOpt(data(8)),
           beneficiaryName = strToOpt(data(9))
         )
-        
-        // Generate QR code and encode it to Base64
-        val base64Image = PayBySquare.encodeFrameQRToBase64(pay)
-        
-        // Output Base64 string to stdout
-        print(base64Image)
+
+        val base64Data = PayBySquare.encode(pay)
+        System.out.println(base64Data)
       } match {
         case Success(_) =>
         case Failure(e) =>
